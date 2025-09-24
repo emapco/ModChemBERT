@@ -1,0 +1,49 @@
+modern_bert_xs:
+  name: xs
+  hidden_size: 768
+  intermediate_size: 1152
+  num_attention_heads: 8
+  num_hidden_layers: 16
+
+modern_bert_sm:
+  name: sm
+  hidden_size: 768
+  intermediate_size: 1152
+  num_attention_heads: 12
+  num_hidden_layers: 19
+
+modern_bert_base:
+  name: base
+  hidden_size: 768
+  intermediate_size: 1152
+  num_attention_heads: 12
+  num_hidden_layers: 22
+
+modern_bert_md:
+  name: md
+  hidden_size: 1024
+  intermediate_size: 1536
+  num_attention_heads: 16
+  num_hidden_layers: 19
+
+modern_bert_lg:
+  name: lg
+  hidden_size: 1024
+  intermediate_size: 2624
+  num_attention_heads: 16
+  num_hidden_layers: 28
+
+# Best Hyperparameters found for each global attention setting for pretraining
+hyperparam_set_candidates:
+  low:
+    name: hp_set_low
+    local_attention: 32
+    global_attn_every_n_layers: 4
+  mid:
+    name: hp_set_mid
+    local_attention: 8
+    global_attn_every_n_layers: 3
+  high:
+    name: hp_set_high
+    local_attention: 16
+    global_attn_every_n_layers: 2

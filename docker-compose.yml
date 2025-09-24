@@ -1,0 +1,12 @@
+services:
+  optuna-db:
+    image: postgres:17.6-alpine3.22
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=postgres
+    volumes:
+      - ./optuna/:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    restart: unless-stopped

@@ -1,0 +1,44 @@
+defaults:
+  - modchembert-config
+  - hyperopt-taft
+  - _self_
+
+early_stopping_patience: 5
+scale_learning_rate: # Scale learning rate by sqrt(per_device_train_batch_size/denominator)
+  enabled: false
+  denominator: 1024
+use_normalized_weight_decay: false
+
+# https://huggingface.co/docs/transformers/main/en/main_classes/trainer#transformers.TrainingArguments
+training_args:
+  _target_: transformers.TrainingArguments
+  resume_from_checkpoint: null
+  eval_strategy: epoch
+  load_best_model_at_end: True
+  logging_dir: ${training_args.output_dir}/logs
+  logging_strategy: epoch
+  logging_first_step: True
+  output_dir: training_output/taft/${training_args.run_name}
+  overwrite_output_dir: false
+  save_strategy: epoch
+  save_total_limit: 1
+  warmup_ratio: 0.1
+  learning_rate: 3.0e-5
+  per_device_train_batch_size: 32
+  per_device_eval_batch_size: 32
+  report_to: none
+  run_name: ${truncate_path:${modchembert.pretrained_model}}-taft-${truncate_path:${dataset.train.name}}
+  seed: 42
+  data_seed: 42
+  dataloader_num_workers: 4
+  dataloader_prefetch_factor: 2
+  dataloader_pin_memory: True
+  lr_scheduler_type: linear
+  num_train_epochs: 10
+  gradient_accumulation_steps: 1
+  optim: stable_adamw
+  bf16: True
+  tf32: True
+  torch_compile: True
+  torch_compile_backend: inductor
+  gradient_checkpointing: True

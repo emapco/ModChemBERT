@@ -1,0 +1,79 @@
+hydra:
+  searchpath:
+    - file://conf
+
+defaults:
+  - modchembert-config
+  - _self_
+
+pretrained_model_path: training_output/release/ModChemBERT-MLM-DAPT-TAFT
+metric: roc_auc_score # roc_auc_score | prc_auc_score
+# The following can also be defined per-dataset in dataset_hyperparameters if needed.
+use_normalized_weight_decay: false # https://arxiv.org/pdf/1711.05101.pdf
+weight_decay: 0.0 # Only used if use_normalized_weight_decay is false.
+optimizer: adam # adam | stable_adamw
+torch_dtype: bfloat16 # float32 | float16 | bfloat16
+
+datasets:
+  - bace_classification
+  - bbbp
+  - clintox
+  - hiv
+  - sider
+  - tox21
+
+dataset_hyperparameters:
+  bace_classification:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  bbbp:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  clintox:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  hiv:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  sider:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  tox21:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0

@@ -1,0 +1,39 @@
+models:
+  - model: training_output/taft/opt/ModChemBERT-MLM-DAPT-taft-adme_microsom_stab_h_cleaned
+    parameters:
+      weight: 0.0909090909
+  - model: training_output/taft/opt/ModChemBERT-MLM-DAPT-taft-adme_microsom_stab_r_cleaned
+    parameters:
+      weight: 0.0909090909
+  - model: training_output/taft/opt/ModChemBERT-MLM-DAPT-taft-adme_permeability
+    parameters:
+      weight: 0.0909090909
+  - model: training_output/taft/opt/ModChemBERT-MLM-DAPT-taft-adme_ppb_h
+    parameters:
+      weight: 0.0909090909
+  - model: training_output/taft/opt/ModChemBERT-MLM-DAPT-taft-adme_ppb_r
+    parameters:
+      weight: 0.0909090909
+  - model: training_output/taft/opt/ModChemBERT-MLM-DAPT-taft-adme_solubility
+    parameters:
+      weight: 0.0909090909
+  - model: training_output/taft/opt/ModChemBERT-MLM-DAPT-taft-astrazeneca_CL
+    parameters:
+      weight: 0.0909090909
+  - model: training_output/taft/opt/ModChemBERT-MLM-DAPT-taft-astrazeneca_LogD74
+    parameters:
+      weight: 0.0909090909
+  - model: training_output/taft/opt/ModChemBERT-MLM-DAPT-taft-astrazeneca_PPB
+    parameters:
+      weight: 0.0909090909
+  - model: training_output/taft/opt/ModChemBERT-MLM-DAPT-taft-astrazeneca_Solubility
+    parameters:
+      weight: 0.0909090909
+  - model: training_output/release/ModChemBERT-MLM
+    parameters:
+      weight: 0.0909090909
+
+merge_method: linear
+base_model: training_output/release/ModChemBERT-MLM
+
+dtype: float32

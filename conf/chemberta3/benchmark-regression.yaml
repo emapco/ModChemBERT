@@ -1,0 +1,70 @@
+hydra:
+  searchpath:
+    - file://conf
+
+defaults:
+  - modchembert-config
+  - _self_
+
+pretrained_model_path: training_output/release/ModChemBERT-MLM-DAPT-TAFT
+metric: rms_score # mean_squared_error | mean_absolute_error | rms_score | mae_score
+transform: true # Whether to apply norm/log transform to the target values for regression tasks.
+# The following can also be defined per-dataset in dataset_hyperparameters if needed.
+use_normalized_weight_decay: false # https://arxiv.org/pdf/1711.05101.pdf
+weight_decay: 0.0 # Only used if use_normalized_weight_decay is false.
+optimizer: adam # adam | stable_adamw
+torch_dtype: bfloat16 # float32 | float16 | bfloat16
+
+datasets:
+  - bace_regression
+  - clearance
+  - delaney # ESOL
+  - freesolv
+  - lipo
+
+dataset_hyperparameters:
+  bace_regression:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  clearance:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  delaney:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  freesolv:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  lipo:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0

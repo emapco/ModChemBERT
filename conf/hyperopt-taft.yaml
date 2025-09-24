@@ -1,0 +1,28 @@
+hyperopt: # currently only optuna is supported
+  enabled: false
+  study_name: taft
+  n_trials: 54 # number of hyperparameter trials to run
+  patience: 3 # number of intermediate value in a trial to wait for improvement before stopping the trial
+  persistence: false # set to false to use in memory storage instead of db storage
+  load_if_exists: true # load study if it already exists
+  storage_url: postgresql://postgres:password@localhost:5432/postgres # example for local postgresql
+  storage_heartbeat_interval: 15 # seconds
+  storage_engine_kwargs: # optional args for the storage engine
+    pool_size: 5
+    connect_args:
+      keepalives: 1
+  hp_space:
+    training_args:
+      - name: warmup_ratio
+        type: categorical
+        choices: [0.0, 0.1, 0.2]
+      - name: learning_rate
+        type: categorical
+        choices: [1.0e-5, 3.0e-5]
+      - name: per_device_train_batch_size
+        type: categorical
+        choices: [8, 16, 32]
+    modchembert_config:
+      - name: classifier_pooling
+        type: categorical
+        choices: [mean, sum_mean, max_cls, cls_mha, max_seq_mha, max_seq_mean]

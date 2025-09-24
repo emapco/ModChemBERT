@@ -1,0 +1,83 @@
+defaults:
+  - modchembert-config-mlm
+  - hyperopt
+  - _self_
+
+early_stopping_patience: null # Number of epochs to wait before early stopping
+scale_learning_rate: # Scale learning rate by sqrt(per_device_train_batch_size/denominator)
+  enabled: false
+  denominator: 1024
+use_normalized_weight_decay:
+  false # overrides the weight decay specified in training_args
+  # DECOUPLED WEIGHT DECAY REGULARIZATION - https://openreview.net/pdf?id=Bkg6RiCqY7
+  # "... suggests that the larger the runtime/number of batch passes to be performed, the smaller the optimal weight decay."
+  # Normalized weight decay for AdamW optimizer - https://arxiv.org/pdf/1711.05101.pdf
+  # optimized hyperparameter lambda_norm = 0.05 for AdamW optimizer
+  # Implemented normalized weight decay: lambda = lambda_norm * math.sqrt(b/BT)
+  # where b is the batch size and B is the total number of training points and T is the total number of epochs.
+
+dataset:
+  smiles_column: canonical_smiles # Column name for SMILES strings in the dataset
+  label_columns: null # Column name for labels in the dataset
+  train:
+    name: Derify/augmented_canonical_druglike_QED_Pfizer_15M # Dataset name on Hugging Face Hub or local path
+    split: train
+    sample_size: 5000
+    deduplicate: false
+  eval:
+    name: Derify/augmented_canonical_druglike_QED_Pfizer_15M
+    split: validation # Adjust to your dataset's validation split - for local paths, use train
+    sample_size: 5000
+    deduplicate: false
+
+# https://huggingface.co/docs/transformers/main/en/main_classes/trainer#transformers.TrainingArguments
+training_args:
+  _target_: transformers.TrainingArguments
+  resume_from_checkpoint: null # null or the path to a valid checkpoint to resume training from.
+  num_train_epochs: 2
+  eval_strategy: steps
+  eval_steps: 3218
+  load_best_model_at_end: False
+  logging_dir: ${training_args.output_dir}/logs
+  logging_strategy: steps
+  logging_steps: 50
+  logging_first_step: True
+  output_dir: training_output/mlm/${training_args.run_name}
+  overwrite_output_dir: false
+  save_strategy: steps
+  save_steps: 3218
+  save_total_limit: 20
+  gradient_accumulation_steps: 1
+  per_device_train_batch_size: 2048
+  per_device_eval_batch_size: 2048
+  adam_beta1: 0.9
+  adam_beta2: 0.98
+  adam_epsilon: 1.0e-6
+  weight_decay: 1.0e-5
+  report_to: null
+  run_name: test
+  seed: 12
+  data_seed: 12
+  dataloader_num_workers: 6
+  dataloader_prefetch_factor: 2
+  dataloader_pin_memory: True
+  warmup_steps: 6437
+  lr_scheduler_type: warmup_stable_decay
+  lr_scheduler_kwargs:
+    # do not define num_warmup_steps since Trainer will calculate it based on num_training_steps and warmup_ratio/warmup_steps
+    num_decay_steps: 6437
+    warmup_type: linear
+    decay_type: 1-sqrt
+  learning_rate: 5.0e-6
+  # https://github.com/huggingface/transformers/pull/39446/files
+  # https://huggingface.co/docs/transformers/main/optimizers#stableadamw
+  # https://github.com/warner-benjamin/optimi/blob/main/optimi/stableadamw.py
+  # https://optimi.benjaminwarner.dev/optimizers/stableadamw/
+  optim: stable_adamw
+  optim_args: decouple_lr=True
+  bf16: True
+  bf16_full_eval: True
+  tf32: True
+  torch_compile: True
+  torch_compile_backend: inductor
+  gradient_checkpointing: True

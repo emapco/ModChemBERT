@@ -1,0 +1,23 @@
+dataset:
+  name: Derify/augmented_canonical_pubchem_13m # Required: dataset id for datasets.load_dataset e.g., 'wikitext' or local path
+  subset: null # Optional: dataset config name or subset (pass if required by dataset)
+  split: train # Which split to load
+  text_column: canonical_smiles # Column name containing primary text
+  text_pair_column: null # Optional secondary text column name
+
+tokenizer:
+  vocab_size: 8192 # Vocabulary size
+  min_frequency: 2 # Minimum frequency for tokens
+  model_max_length: 8192 # Maximum sequence length
+  from_vocab: null # Optional: path to pre-existing vocab file to load and continue training
+  from_merges: null # Optional: path to pre-existing merges file to load and continue training
+
+special_tokens:
+  unk_token: "[UNK]"
+  pad_token: "[PAD]"
+  cls_token: "[CLS]"
+  sep_token: "[SEP]"
+  mask_token: "[MASK]"
+
+output:
+  dir: training_output/bpe # Directory to save the trained tokenizer

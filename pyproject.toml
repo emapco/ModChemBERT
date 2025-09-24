@@ -1,0 +1,108 @@
+[project]
+name = "modchembert"
+version = "0.0.1"
+description = "SMILES-based ModernBERT model"
+license = { text = "Apache 2.0" }
+readme = "README.md"
+authors = [
+    { name = "Emmanuel Cortes", email = "manny@derifyai.com" },
+]
+maintainers = [
+    { name = "Emmanuel Cortes", email = "manny@derifyai.com" },
+]
+requires-python = ">=3.10"
+keywords = ["cheminformatics", "machine-learning", "transformers", "molecular-representation-learning", "molecular-property-prediction"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Chemistry",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "transformers[torch]>=4.56.1",
+    "tokenizers>=0.22.0",
+    "optuna>=4.4.0",
+    "wandb>=0.21.1",
+    "torch>=2.6.0",
+    "scikit-learn>=1.7.1",
+    "pandas>=2.0.0",
+    "numpy",
+    "hydra-core>=1.3.2",
+    "codecarbon>=3.0.0",
+    "datasets>=4.0.0",
+    "rdkit>=2025.3.5",
+    "pyarrow>=21.0.0",
+    "deepchem==2.8.1.dev20250829211407",
+    "torch-optimi>=0.3.2",
+    "psycopg2-binary==2.9.10",
+]
+
+[project.urls]
+Repository = "https://github.com/emapco/modchembert"
+Homepage = "https://github.com/emapco/modchembert"
+Documentation = "https://github.com/emapco/modchembert#readme"
+"Bug Tracker" = "https://github.com/emapco/modchembert/issues"
+Changelog = "https://github.com/emapco/modchembert/releases"
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-cov", "pytest-xdist", "ipykernel", "ipywidgets", "build", "ruff", "ninja==1.11.1.4"]
+adapt = ["h5py>=3.14.0"]
+
+[build-system]
+requires = ["setuptools>=64", "setuptools-scm>=8.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.package-data]
+"modchembert.conf" = ["*.yaml", "*.yml"]
+"modchembert.conf.model" = ["*.yaml", "*.yml"]
+"modchembert.tokenizers.bpe" = ["*.json", "README.md"]
+"modchembert.tokenizers.molformer" = ["*.txt", "*.json", "README.md"]
+"modchembert.tokenizers.smiles" = ["*.json", "README.md"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["modchembert*"]
+
+[tool.ruff]
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "build",
+    "dist",
+    "site-packages",
+    "venv",
+]
+
+# Same as Black.
+line-length = 120
+indent-width = 4
+
+[tool.ruff.lint]
+select = ["E", "F", "UP", "W", "B", "SIM", "I"]
+ignore = []
+fixable = ["ALL"]
+unfixable = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"

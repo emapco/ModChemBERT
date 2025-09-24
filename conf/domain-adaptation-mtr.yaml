@@ -1,0 +1,36 @@
+defaults:
+  - modchembert-config
+  - _self_
+
+# https://huggingface.co/docs/transformers/main/en/main_classes/trainer#transformers.TrainingArguments
+training_args:
+  _target_: transformers.TrainingArguments
+  run_name: dapt-mtr-${modchembert_config.classifier_pooling}_pooling-${modchembert_config.classifier_pooling_last_k}k
+  # full path set from CLI arg and the dataset name will be appended
+  # e.g., {cli_output_arg}/{training_args.run_name}-{dataset_name}
+  output_dir: ${training_args.run_name}
+  overwrite_output_dir: true
+  bf16: true
+  tf32: true
+  # Optimizer
+  optim: stable_adamw
+  learning_rate: 3.0e-5
+  lr_scheduler_type: linear
+  warmup_ratio: 0.1
+  # General
+  num_train_epochs: 10
+  per_device_train_batch_size: 16
+  gradient_checkpointing: true
+  torch_compile: true
+  torch_compile_backend: inductor
+  seed: 42
+  data_seed: 42
+  # Save/Eval
+  save_strategy: epoch
+  save_total_limit: 1
+  eval_strategy: epoch
+  eval_on_start: true
+  load_best_model_at_end: true
+  metric_for_best_model: loss
+  logging_first_step: true
+  logging_steps: 250

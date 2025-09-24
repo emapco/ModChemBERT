@@ -1,0 +1,25 @@
+hydra:
+  searchpath:
+    - file://../
+
+defaults:
+  - hyperopt-benchmark
+  - _self_
+
+dataset:
+  smiles_column: smiles
+  label_columns: "*"
+  is_benchmark: true
+  train:
+    name: chemberta3/chemberta3_benchmarking/data/datasets/deepchem_splits/tox21/train_cleaned.csv
+    split: train
+    deduplicate: false
+  eval:
+    name: chemberta3/chemberta3_benchmarking/data/datasets/deepchem_splits/tox21/valid_cleaned.csv
+    split: validation
+    deduplicate: false
+
+modchembert:
+  task: classification
+  n_tasks: 12
+  pretrained_model: training_output/mlm/wsd-sm-la-8-ga-3 # Path to a pretrained model

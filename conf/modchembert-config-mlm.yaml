@@ -1,0 +1,44 @@
+defaults:
+  - model-sizes
+  - _self_
+
+active_size: ${modern_bert_base} # defined in model-sizes.yaml
+active_hyperparam_set: ${hyperparam_set_candidates.mid} # defined in model-sizes.yaml
+modchembert_config:
+  _target_: modchembert.models.configuration_modchembert.ModChemBertConfig
+  hidden_size: ${active_size.hidden_size}
+  intermediate_size: ${active_size.intermediate_size}
+  num_attention_heads: ${active_size.num_attention_heads}
+  num_hidden_layers: ${active_size.num_hidden_layers}
+  max_position_embeddings: 256
+  layer_norm_eps: 1.0e-05
+  attention_dropout: 0.1
+  mlp_dropout: 0.1
+  embedding_dropout: 0.1
+  local_attention: ${active_hyperparam_set.local_attention}
+  global_attn_every_n_layers: ${active_hyperparam_set.global_attn_every_n_layers}
+  classifier_dropout: 0.0
+  classifier_pooling: max_seq_mha
+  # cls | mean - ModernBERT original options
+  # sum_mean | sum_sum | mean_mean | mean_sum - ChemLM options
+  # max_cls | cls_mha | max_seq_mha - MaxPoolBERT options
+  # max_seq_mean - Custom option: max pooling over last k hidden states, then mean pooling over sequence
+  classifier_pooling_num_attention_heads: 4 # only used if classifier_pooling is cls_mha or max_seq_mha
+  classifier_pooling_attention_dropout: 0.1 # only used if classifier_pooling is cls_mha or max_seq_mha
+  classifier_pooling_last_k: 3 # only used if classifier_pooling is max_cls, max_seq_mha, or max_seq_mean
+  tie_word_embeddings: true
+  position_embedding_type: absolute
+  reference_compile: true
+
+# ModChemBert class arguments
+# Used for MLM pretraining
+modchembert:
+  task: mlm # Task to train the model on
+  n_tasks: 1 # Number of tasks for multi-task training
+  pretrained_model: null # Path to a pretrained model, if not specified, will train from scratch
+  tokenizer_path: null # Path to the tokenizer, if not specified, will use the library's default tokenizer
+  data_collator_kwargs: # used for MLM task
+    # https://huggingface.co/docs/transformers/en/main_classes/data_collator#transformers.DataCollatorForLanguageModeling.mlm_probability
+    mlm_probability: 0.30 # Probability of replacing a token with [MASK] during MLM
+    mask_replace_prob: 0.8
+    random_replace_prob: 0.1

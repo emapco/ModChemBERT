@@ -1,0 +1,21 @@
+hydra:
+  searchpath:
+    - file://../
+
+defaults:
+  - task-adaptation-ft
+  - _self_
+
+dataset:
+  smiles_column: smiles
+  label_columns: y
+  is_task_finetune: true
+  apply_transforms: true
+  train:
+    name: domain-adaptation-molecular-transformers/data/adme_microsom_stab_r_cleaned.csv
+    split: train
+    deduplicate: false
+  eval:
+    name: domain-adaptation-molecular-transformers/data/adme_microsom_stab_r_cleaned.csv
+    split: validation
+    deduplicate: false

@@ -1,0 +1,76 @@
+defaults:
+  - modchembert-config
+  - _self_
+
+early_stopping_patience: 5
+scale_learning_rate: # Scale learning rate by sqrt(per_device_train_batch_size/denominator)
+  enabled: false
+  denominator: 1024
+use_normalized_weight_decay: true
+
+# https://huggingface.co/docs/transformers/main/en/main_classes/trainer#transformers.TrainingArguments
+training_args:
+  _target_: transformers.TrainingArguments
+  resume_from_checkpoint: null
+  eval_strategy: epoch
+  load_best_model_at_end: True
+  metric_for_best_model: loss
+  logging_dir: ${training_args.output_dir}/logs
+  logging_strategy: epoch
+  logging_first_step: True
+  output_dir: training_output/benchmarking/${training_args.run_name}
+  overwrite_output_dir: false
+  save_strategy: epoch
+  save_total_limit: 1
+  per_device_train_batch_size: 32
+  per_device_eval_batch_size: 32
+  report_to: none
+  run_name: ${truncate_path:${modchembert.pretrained_model}}-${truncate_path_only_parent:${dataset.train.name}}
+  seed: 42
+  data_seed: 42
+  dataloader_num_workers: 4
+  dataloader_prefetch_factor: 2
+  dataloader_pin_memory: True
+  lr_scheduler_type: linear
+  learning_rate: 3.0e-5
+  num_train_epochs: 100
+  warmup_ratio: 0.1
+  gradient_accumulation_steps: 1
+  optim: stable_adamw
+  bf16: True
+  tf32: True
+  torch_compile: True
+  torch_compile_backend: inductor
+  gradient_checkpointing: True
+
+hyperopt: # currently only optuna is supported
+  enabled: true
+  study_name: benchmark
+  n_trials: 40 # number of hyperparameter trials to run
+  patience: 5 # number of intermediate value in a trial to wait for improvement before stopping the trial
+  persistence: false # set to false to use in memory storage instead of db storage
+  load_if_exists: true # load study if it already exists
+  storage_url: postgresql://postgres:password@localhost:5432/postgres # example for local postgresql
+  storage_heartbeat_interval: 15 # seconds
+  storage_engine_kwargs: # optional args for the storage engine
+    pool_size: 5
+    connect_args:
+      keepalives: 1
+  hp_space:
+    training_args:
+      - name: per_device_train_batch_size
+        type: categorical
+        choices: [8, 16, 32, 64]
+    modchembert_config:
+      - name: classifier_pooling
+        type: categorical
+        choices: [mean, sum_mean, max_cls, cls_mha, max_seq_mha, max_seq_mean]
+      - name: classifier_pooling_attention_dropout
+        type: categorical
+        choices: [0.0, 0.1]
+      - name: embedding_dropout
+        type: categorical
+        choices: [0.0, 0.1]
+      - name: classifier_dropout
+        type: categorical
+        choices: [0.0, 0.1]
