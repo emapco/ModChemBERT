@@ -183,3 +183,4 @@ training_output
 !**/adme/*csv
 !**/astrazeneca/*csv
 !**/combined/*csv
+!**/tokenizers/**/*.json

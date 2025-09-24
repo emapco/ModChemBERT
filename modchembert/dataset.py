@@ -33,9 +33,55 @@ dataset_transformations = {
 
 
 class ModChemBertDatasetProcessor:
-    """Minimal dataset that yields raw SMILES strings.
+    """Dataset processing class for loading, preprocessing and tokenizing molecular property / language modeling datasets.
 
-    Tokenization/masking is deferred to ModChemBert._prepare_batch via a custom collate_fn.
+    This processor wraps common data-access patterns for ModChemBERT style experiments:
+    1. Load a Hugging Face Hub dataset split OR a local CSV/JSON(L) file.
+    2. Optionally resolve scaffold split indices for domain adaptation / task finetuning datasets.
+    3. (Optionally) apply dataset-level numeric transformations (normalization / log) based on
+       known benchmark dataset names.
+    4. Filter to the SMILES column plus requested label columns (supports wildcard "*").
+    5. Optional SMILES level deduplication.
+    6. Optional random down-sampling with a reproducible seed.
+    7. Batch tokenization into a Hugging Face `datasets.Dataset` ready for DataLoader usage.
+
+    The resulting tokenized dataset is stored in `self.dataset`. For supervised tasks it will
+    contain a `labels` tensor (shape: (batch_size,) for single-task or (batch_size, n_tasks) for multi-task).
+
+    Parameters
+    ----------
+    dataset_name : str
+        Path to a local data file (e.g. `data.csv`, `data.jsonl`) or a Hugging Face Hub dataset identifier.
+        For task finetuning (domain adaptation) expects a companion `*_0.scaffold_splits.json` file
+        alongside the CSV providing train/val/test indices.
+    split : str
+        Dataset split name when pulling from the Hub (e.g. "train", "validation", "test"). For
+        scaffold-split datasets the value is matched fuzzily against "train", "val" (or "validation") and "test".
+    smiles_column : str
+        Name of the column containing canonical (or raw) SMILES strings to tokenize.
+    tokenizer : transformers.PreTrainedTokenizerFast
+        Tokenizer used to convert SMILES into model `input_ids` / `attention_mask` (and `special_tokens_mask` for MLM).
+    task : TaskType, default="mlm"
+        One of `VALID_TASK_TYPES` (e.g. "mlm", "regression", "classification", "mtr"). Determines label handling
+        and padding strategy.
+    n_tasks : int, default=1
+        Number of prediction heads / target columns for supervised tasks (ignored for MLM).
+    label_columns : list[str] | "*" | None, default=None
+        Explicit list of label column names. Use "*" to take all non-SMILES columns. Ignored for MLM. If None,
+        defaults to an empty list (unsupervised / no labels).
+    sample_size : int | None, default=None
+        If provided, randomly samples (after shuffle) up to this many rows from the filtered dataset.
+    deduplicate : bool, default=False
+        If True, keeps only the first occurrence of each unique SMILES string.
+    is_task_finetune : bool, default=False
+        If True, treat `dataset_name` as a local CSV requiring scaffold split JSON index file resolution.
+    is_benchmark : bool, default=False
+        If True, forces CSV loading without split selection (used for benchmark evaluation inputs).
+    apply_transforms : bool, default=False
+        If True, apply a numeric transformation (e.g. normalization or log) chosen by heuristic match
+        against known dataset keys. Falls back to normalization if a match is found; leaves untouched otherwise.
+    seed : int | None, default=None
+        Random seed used for dataset shuffling before sampling. Ignored if `sample_size` is None.
     """
 
     def __init__(
