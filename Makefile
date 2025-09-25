@@ -22,21 +22,21 @@ TASK_FINETUNE_ENV_MODCHEMBERT := $(TRAIN_ENV_BASE) WANDB_PROJECT=ModChemBERT-Tas
 install: clone-chemberta3
 	@if [ ! -d ".venv" ]; then \
 		echo "Creating Python virtual environment..."; \
-		python3 -m venv .venv; \
+		python3.11 -m venv .venv; \
 	fi
-	pip install -e .[dev,adapt]
+	. .venv/bin/activate && pip install -e .[dev,adapt]
 	make clone-mergekit
 
 .PHONY: install-flash-attn
 install-flash-attn:
-	pip install flash-attn --no-build-isolation
+	. .venv/bin/activate && pip install flash-attn --no-build-isolation
 
 .PHONY: clone-mergekit
 clone-mergekit:
 	@if [ ! -d "mergekit" ]; then \
 		git clone https://github.com/arcee-ai/mergekit; \
 	fi
-	cd mergekit && pip install -e .
+	. .venv/bin/activate && cd mergekit && pip install -e .
 
 .PHONY: clone-chemberta3
 clone-chemberta3:

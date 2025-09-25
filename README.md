@@ -1,6 +1,10 @@
 # ModChemBERT: ModernBERT as a Chemical Language Model
 
 ## Setup
+
+Requirements:
+- Python 3.11  # deepchem requires python<3.12
+
 To install ModChemBERT and its dependencies, run:
 ```bash
 make install

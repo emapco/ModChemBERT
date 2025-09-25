@@ -1,6 +1,6 @@
 [project]
 name = "modchembert"
-version = "0.0.2"
+version = "0.0.3"
 description = "SMILES-based ModernBERT model"
 license = { text = "Apache 2.0" }
 readme = "README.md"
@@ -10,7 +10,7 @@ authors = [
 maintainers = [
     { name = "Emmanuel Cortes", email = "manny@derifyai.com" },
 ]
-requires-python = ">=3.10"
+requires-python = "==3.11"
 keywords = ["cheminformatics", "machine-learning", "transformers", "molecular-representation-learning", "molecular-property-prediction"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
@@ -18,7 +18,6 @@ classifiers = [
     "Intended Audience :: Developers",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Topic :: Scientific/Engineering :: Chemistry",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
