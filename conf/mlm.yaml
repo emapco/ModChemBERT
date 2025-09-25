@@ -74,7 +74,7 @@ training_args:
   # https://github.com/warner-benjamin/optimi/blob/main/optimi/stableadamw.py
   # https://optimi.benjaminwarner.dev/optimizers/stableadamw/
   optim: stable_adamw
-  optim_args: decouple_lr=True
+  optim_args: decouple_lr=True,max_lr=1.0e-4
   bf16: True
   bf16_full_eval: True
   tf32: True
