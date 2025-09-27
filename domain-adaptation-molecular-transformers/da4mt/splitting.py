@@ -3,6 +3,7 @@ from collections import defaultdict
 from typing import TypedDict
 
 import numpy as np
+from deepchem.splits.splitters import _generate_scaffold
 
 
 class DatasetSplit(TypedDict):
@@ -38,27 +39,6 @@ def assert_no_overlap(folds: list[DatasetSplit]) -> None:
                 assert len(a[key]) == len(b[key]), f"Different sized splits: {key}, {i}, {j}"
 
 
-def generate_scaffold(smiles: str, include_chirality: bool = False) -> str | None:
-    """
-    Generate a Murcko scaffold from a SMILES string.
-
-    :param str smiles: SMILES string of the molecule
-    :param bool include_chirality: Whether to include chirality in the scaffold
-    :return: Murcko scaffold SMILES string
-    """
-    try:
-        from rdkit import Chem
-        from rdkit.Chem.Scaffolds.MurckoScaffold import MurckoScaffoldSmiles
-    except ModuleNotFoundError as e:
-        raise ImportError("This function requires RDKit to be installed.") from e
-
-    mol = Chem.MolFromSmiles(smiles)
-    if mol is None:
-        return None
-
-    return MurckoScaffoldSmiles(mol=mol, includeChirality=include_chirality)
-
-
 def generate_scaffold_ds(smiles_list: list[str]) -> dict[str, list[int]]:
     """
     Generate a dictionary mapping scaffolds to molecule indices.
@@ -68,7 +48,7 @@ def generate_scaffold_ds(smiles_list: list[str]) -> dict[str, list[int]]:
     """
     scaffolds = defaultdict(list)
     for ind, smiles in enumerate(smiles_list):
-        scaffold = generate_scaffold(smiles)
+        scaffold = _generate_scaffold(smiles)
         if scaffold is not None:
             scaffolds[scaffold].append(ind)
 
