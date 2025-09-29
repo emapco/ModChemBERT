@@ -34,3 +34,4 @@ training_args:
   metric_for_best_model: loss
   logging_first_step: true
   logging_steps: 250
+  max_grad_norm: null

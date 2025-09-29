@@ -21,6 +21,9 @@ datasets:
   - hiv
   - sider
   - tox21
+  - antimalarial # uses random split instead of scaffold
+  - cocrystal
+  - covid19
 
 dataset_hyperparameters:
   bace_classification:
@@ -69,6 +72,33 @@ dataset_hyperparameters:
     classifier_dropout: 0.0
     embedding_dropout: 0.0
   tox21:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  antimalarial:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  cocrystal:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  covid19:
     batch_size: 32
     epochs: 100
     learning_rate: 3e-5

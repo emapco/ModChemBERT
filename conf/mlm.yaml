@@ -69,9 +69,7 @@ training_args:
     warmup_type: linear
     decay_type: 1-sqrt
   learning_rate: 1.0e-4
-  # https://github.com/huggingface/transformers/pull/39446/files
   # https://huggingface.co/docs/transformers/main/optimizers#stableadamw
-  # https://github.com/warner-benjamin/optimi/blob/main/optimi/stableadamw.py
   # https://optimi.benjaminwarner.dev/optimizers/stableadamw/
   optim: stable_adamw
   optim_args: decouple_lr=True,max_lr=1.0e-4
@@ -81,3 +79,4 @@ training_args:
   torch_compile: True
   torch_compile_backend: inductor
   gradient_checkpointing: True
+  max_grad_norm: null

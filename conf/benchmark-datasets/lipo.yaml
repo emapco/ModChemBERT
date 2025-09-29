@@ -23,4 +23,4 @@ dataset:
 modchembert:
   task: regression
   n_tasks: 1
-  pretrained_model: training_output/mlm/wsd-sm-la-8-ga-3 # Path to a pretrained model
+  pretrained_model: training_output/release/ModChemBERT-MLM-DAPT-TAFT-OPT

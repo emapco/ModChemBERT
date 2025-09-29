@@ -3,7 +3,7 @@
 ## Setup
 
 Requirements:
-- Python 3.11  # deepchem requires python<3.12
+- Python 3.11 # deepchem requires python<3.12
 
 To install ModChemBERT and its dependencies, run:
 ```bash
@@ -41,9 +41,9 @@ flowchart TB
 ### Datasets
 ### Datasets for Domain-Adaptive Pre-Training (DAPT) and Task-Adaptive Fine-Tuning (TAFT)
 
-Sultan et al. [1] utilized ADME and AstraZeneca datasets for DAPT of BERT-like models on multi-task regression (MTR) following MLM pretraining.
+Sultan et al. (DA4MT) [1] utilized ADME and AstraZeneca datasets for DAPT of BERT-like models on multi-task regression (MTR) following MLM pretraining.
 
-ModChemBERT uses the same datasets for DAPT and TAFT. They are split using DA4MT's scaffold split option. While DA4MT [1] trains various models per dataset, ModChemBERT aggregates all datasets (`all_datasets_smiles`) during DAPT. For TAFT, the MTR model is fine-tuned separately on each dataset, producing 10 fine-tuned models.
+ModChemBERT uses the same datasets for DAPT and TAFT. They are split using DA4MT's [1] (Bemis-Murcko) scaffold split option (equivalent to DeepChem scaffold splitter). While DA4MT trains various models per dataset, ModChemBERT aggregates all datasets (`all_datasets_smiles`) during DAPT. For TAFT, the MTR model is fine-tuned separately on each dataset, producing 10 fine-tuned models.
 
 #### Dataset Generation
 Ensure Git LFS is installed to download the datasets:
@@ -70,7 +70,10 @@ This creates dataset files in `domain-adaptation-molecular-transformers/data`:
 
 ### Datasets for ChemBERTa-3 Benchmarking
 
-ModChemBERT utilizes the ChemBERTa-3 [2] benchmarking framework and datasets to evaluate downstream classification/regression tasks. The datasets use DeepChem scaffold splits for train/val/test partitioning.
+ModChemBERT utilizes the ChemBERTa-3 [2] benchmarking framework and datasets to evaluate downstream classification/regression tasks.
+Additional classification datasets (antimalarial [3], cocrystal [4], and COVID-19 [5]) from Mswahili, et al. [6] are included to provide a more comprehensive evaluation.
+The DA4MT regression datasets (ADME [7] and AstraZeneca) are also included in the benchmarking evaluation.
+All benchmark datasets use DeepChem scaffold splits for train/val/test partitioning.
 
 #### Dataset Generation
 First, clone the ChemBERTa-3 repository:
@@ -145,7 +148,7 @@ python scripts/run_taft_roundrobin.py --hyperopt --num-workers 2 --cuda --pretra
 Hyperparameter optimization is performed using Optuna and the search space is defined in `conf/hyperopt-taft.yaml`.
 
 ### Checkpoint Averaging
-ModernBERT [3], JaColBERTv2.5 [4], and Llama 3.1 [5] demonstrate that checkpoint averaging (model merging) can yield a more performant final model. JaColBERTv2.5 [4] specifically notes gains in generalization without degrading out-of-domain performance.
+ModernBERT [8], JaColBERTv2.5 [9], and Llama 3.1 [10] demonstrate that checkpoint averaging (model merging) can yield a more performant final model. JaColBERTv2.5 [9] specifically notes gains in generalization without degrading out-of-domain performance.
 
 ModChemBERT applies checkpoint averaging to integrate learned features from each task-adapted checkpoint and improve generalization.
 
@@ -159,25 +162,6 @@ This merges TAFT checkpoints using `conf/merge/merge-taft-checkpoints.yaml`. The
 
 Copying `modeling_modchembert.py` ensures the model can be loaded with `transformers.AutoModel.from_pretrained()`.
 
-## Classifier Pooling Methods
-The ChemLM [6] paper explores pooling methods for chemical language models and finds the embedding method has the strongest impact on downstream performance among evaluated hyperparameters.
-
-Behrendt et al. [7] noted that the last few layers contain task-specific information and that pooling methods leveraging multiple layers can enhance performance. MaxPoolBERT [7] results showed `max_seq_mha` was particularly effective in low-data regimes, while `cls_mha` performed better on larger datasets.
-
-ModChemBERT further explores these pooling methods across DAPT, TAFT, and benchmarking phases.
-
-The available pooling methods are:
-- `cls` - Last hidden layer [CLS] token (ModernBERT CLS)
-- `mean` - Mean over last hidden layer (ModernBERT Mean)
-- `max_cls` - Max over last k [CLS] tokens (MaxPoolBERT MaxCLS)
-- `cls_mha` - MHA with [CLS] query (ModernBERT MHA)
-- `max_seq_mha` - MHA with max pooled sequence as KV and max pooled [CLS] as query (MaxPoolBERT MaxSeq + MHA)
-- `sum_mean` - Sum layers → mean tokens (ChemLM Sum + Mean)
-- `sum_sum` - Sum layers → sum tokens (ChemLM Sum + Sum)
-- `mean_mean` - Mean layers → mean tokens (ChemLM Mean + Mean)
-- `mean_sum` - Mean layers → sum tokens (ChemLM Mean + Sum)
-- `max_seq_mean` - Max over last k layers → mean tokens (custom)
-
 ## ChemBERTa-3 Benchmarking
 Evaluate ModChemBERT on downstream tasks using the ChemBERTa-3 benchmarking framework.
 
@@ -186,14 +170,14 @@ To evaluate on classification tasks, run:
 make eval-classification
 ```
 
-Configure classification datasets (bace_classification, bbbp, tox21, sider, clintox, hiv), metrics (roc_auc_score, prc_auc_score), and per-dataset hyperparameters in `conf/chemberta3/benchmark-classification.yaml`.
+Configure classification datasets (antimalarial, bace_classification, etc.), metrics (roc_auc_score, prc_auc_score), and per-dataset hyperparameters in `conf/chemberta3/benchmark-classification.yaml`.
 
 To evaluate on regression tasks, run:
 ```bash
 make eval-regression
 ```
 
-Configure regression datasets (esol, bace_regression, freesolv, lipo, clearance), metrics (rms_score, mean_squared_error, mean_absolute_error, mae_score), transform options, and per-dataset hyperparameters in `conf/chemberta3/benchmark-regression.yaml`.
+Configure regression datasets (esol, bace_regression, etc.), metrics (rms_score, mean_squared_error, mean_absolute_error, mae_score), transform options, and per-dataset hyperparameters in `conf/chemberta3/benchmark-regression.yaml`.
 
 ### Dataset-specific Hyperparameters
 Each dataset has individual training hyperparameters:
@@ -227,6 +211,28 @@ To analyze benchmarking results:
 ```
 This script outputs a summary table of validation and test results per task plus overall averages.
 
+## Classifier Pooling Methods
+The ChemLM [11] paper explores pooling methods for chemical language models and finds the embedding method has the strongest impact on downstream performance among evaluated hyperparameters.
+
+Behrendt et al. [12] noted that the last few layers contain task-specific information and that pooling methods leveraging information from multiple layers can enhance model performance. Their results further demonstrated that the `max_seq_mha` pooling method was particularly effective in low-data regimes, which is often the case for molecular property prediction tasks.
+
+ModChemBERT further explores these pooling methods across DAPT, TAFT, and benchmarking phases.
+
+Note: ModChemBERT’s `max_seq_mha` differs from MaxPoolBERT [12]. Behrendt et al. used PyTorch `nn.MultiheadAttention`, whereas ModChemBERT's `ModChemBertPoolingAttention` adapts ModernBERT’s `ModernBertAttention`. 
+On ChemBERTa-3 benchmarks this variant produced stronger validation metrics and avoided the training instabilities (sporadic zero / NaN losses and gradient norms) seen with `nn.MultiheadAttention`. Training instability with ModernBERT has been reported in the past ([discussion 1](https://huggingface.co/answerdotai/ModernBERT-base/discussions/59) and [discussion 2](https://huggingface.co/answerdotai/ModernBERT-base/discussions/63)).
+
+The available pooling methods are:
+- `cls` - Last hidden layer [CLS] token (ModernBERT CLS)
+- `mean` - Mean over last hidden layer (ModernBERT Mean)
+- `max_cls` - Max over last k [CLS] tokens (MaxPoolBERT MaxCLS)
+- `cls_mha` - MHA with [CLS] query (ModernBERT MHA)
+- `max_seq_mha` - MHA with max pooled sequence as KV and max pooled [CLS] as query (MaxPoolBERT MaxSeq + MHA)
+- `sum_mean` - Sum layers → mean tokens (ChemLM Sum + Mean)
+- `sum_sum` - Sum layers → sum tokens (ChemLM Sum + Sum)
+- `mean_mean` - Mean layers → mean tokens (ChemLM Mean + Mean)
+- `mean_sum` - Mean layers → sum tokens (ChemLM Mean + Sum)
+- `max_seq_mean` - Max over last k layers → mean tokens (custom)
+
 ## Citation
 If you use ModChemBERT in your research, please cite the following:
 ```bibtex
@@ -242,9 +248,14 @@ If you use ModChemBERT in your research, please cite the following:
 
 ## References
 1. Sultan, Afnan, et al. "Transformers for molecular property prediction: Domain adaptation efficiently improves performance." arXiv preprint arXiv:2503.03360 (2025).
-2. Singh, Riya, et al. "ChemBERTa-3: An Open Source Training Framework for Chemical Foundation Models." (2025).
-3. Warner, Benjamin, et al. "Smarter, better, faster, longer: A modern bidirectional encoder for fast, memory efficient, and long context finetuning and inference." arXiv preprint arXiv:2412.13663 (2024).
-4. Clavié, Benjamin. "JaColBERTv2.5: Optimising Multi-Vector Retrievers to Create State-of-the-Art Japanese Retrievers with Constrained Resources." Journal of Natural Language Processing 32.1 (2025): 176-218.
-5. Grattafiori, Aaron, et al. "The llama 3 herd of models." arXiv preprint arXiv:2407.21783 (2024).
-6. Kallergis, Georgios, et al. "Domain adaptable language modeling of chemical compounds identifies potent pathoblockers for Pseudomonas aeruginosa." Communications Chemistry 8.1 (2025): 114.
-7. Behrendt, Maike, Stefan Sylvius Wagner, and Stefan Harmeling. "MaxPoolBERT: Enhancing BERT Classification via Layer-and Token-Wise Aggregation." arXiv preprint arXiv:2505.15696 (2025).
+2. Singh R, Barsainyan AA, Irfan R, Amorin CJ, He S, Davis T, et al. ChemBERTa-3: An Open Source Training Framework for Chemical Foundation Models. ChemRxiv. 2025; doi:10.26434/chemrxiv-2025-4glrl-v2 This content is a preprint and has not been peer-reviewed.
+3. Mswahili, M.E.; Ndomba, G.E.; Jo, K.; Jeong, Y.-S. Graph Neural Network and BERT Model for Antimalarial Drug Predictions Using Plasmodium Potential Targets. Applied Sciences, 2024, 14(4), 1472. https://doi.org/10.3390/app14041472
+4. Mswahili, M.E.; Lee, M.-J.; Martin, G.L.; Kim, J.; Kim, P.; Choi, G.J.; Jeong, Y.-S. Cocrystal Prediction Using Machine Learning Models and Descriptors. Applied Sciences, 2021, 11, 1323. https://doi.org/10.3390/app11031323
+5. Harigua-Souiai, E.; Heinhane, M.M.; Abdelkrim, Y.Z.; Souiai, O.; Abdeljaoued-Tej, I.; Guizani, I. Deep Learning Algorithms Achieved Satisfactory Predictions When Trained on a Novel Collection of Anticoronavirus Molecules. Frontiers in Genetics, 2021, 12:744170. https://doi.org/10.3389/fgene.2021.744170
+6. Mswahili, M.E., Hwang, J., Rajapakse, J.C. et al. Positional embeddings and zero-shot learning using BERT for molecular-property prediction. J Cheminform 17, 17 (2025). https://doi.org/10.1186/s13321-025-00959-9
+7. Cheng Fang, Ye Wang, Richard Grater, Sudarshan Kapadnis, Cheryl Black, Patrick Trapa, and Simone Sciabola. "Prospective Validation of Machine Learning Algorithms for Absorption, Distribution, Metabolism, and Excretion Prediction: An Industrial Perspective" Journal of Chemical Information and Modeling 2023 63 (11), 3263-3274 https://doi.org/10.1021/acs.jcim.3c00160
+8. Warner, Benjamin, et al. "Smarter, better, faster, longer: A modern bidirectional encoder for fast, memory efficient, and long context finetuning and inference." arXiv preprint arXiv:2412.13663 (2024).
+9. Clavié, Benjamin. "JaColBERTv2.5: Optimising Multi-Vector Retrievers to Create State-of-the-Art Japanese Retrievers with Constrained Resources." arXiv preprint arXiv:2407.20750 (2024).
+10. Grattafiori, Aaron, et al. "The llama 3 herd of models." arXiv preprint arXiv:2407.21783 (2024).
+11. Kallergis, G., Asgari, E., Empting, M. et al. Domain adaptable language modeling of chemical compounds identifies potent pathoblockers for Pseudomonas aeruginosa. Commun Chem 8, 114 (2025). https://doi.org/10.1038/s42004-025-01484-4
+12. Behrendt, Maike, Stefan Sylvius Wagner, and Stefan Harmeling. "MaxPoolBERT: Enhancing BERT Classification via Layer-and Token-Wise Aggregation." arXiv preprint arXiv:2505.15696 (2025).

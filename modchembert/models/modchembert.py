@@ -249,13 +249,11 @@ class ModChemBert(HuggingFaceModel):
         if self.task == "mlm":
             tokens = self.tokenizer(
                 smiles_batch[0].tolist(),
-                add_special_tokens=True,
                 padding=True,
                 pad_to_multiple_of=8,
                 truncation=True,
                 max_length=self.tokenizer.model_max_length,
                 return_attention_mask=True,
-                return_special_tokens_mask=True,
                 return_tensors="pt",
             )
             inputs, labels = self.data_collator.torch_mask_tokens(tokens["input_ids"])
@@ -263,7 +261,6 @@ class ModChemBert(HuggingFaceModel):
                 "input_ids": inputs.to(self.device),
                 "labels": labels.to(self.device, dtype=self.label_dtype),
                 "attention_mask": tokens["attention_mask"].to(self.device),
-                "special_tokens_mask": tokens["special_tokens_mask"].to(self.device),
             }
             return inputs, None, w
         elif self.task in ["regression", "classification", "mtr"]:

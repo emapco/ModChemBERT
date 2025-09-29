@@ -21,6 +21,16 @@ datasets:
   - delaney # ESOL
   - freesolv
   - lipo
+  - adme_microsom_stab_h
+  - adme_microsom_stab_r
+  - adme_permeability
+  - adme_ppb_h
+  - adme_ppb_r
+  - adme_solubility
+  - astrazeneca_cl
+  - astrazeneca_logd74
+  - astrazeneca_ppb
+  - astrazeneca_solubility
 
 dataset_hyperparameters:
   bace_regression:
@@ -60,6 +70,96 @@ dataset_hyperparameters:
     classifier_dropout: 0.0
     embedding_dropout: 0.0
   lipo:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  adme_microsom_stab_h:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  adme_microsom_stab_r:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  adme_permeability:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  adme_ppb_h:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  adme_ppb_r:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  adme_solubility:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  astrazeneca_cl:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  astrazeneca_logd74:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  astrazeneca_ppb:
+    batch_size: 32
+    epochs: 100
+    learning_rate: 3e-5
+    classifier_pooling: max_seq_mha
+    classifier_pooling_last_k: 3
+    classifier_pooling_attention_dropout: 0.1
+    classifier_dropout: 0.0
+    embedding_dropout: 0.0
+  astrazeneca_solubility:
     batch_size: 32
     epochs: 100
     learning_rate: 3e-5

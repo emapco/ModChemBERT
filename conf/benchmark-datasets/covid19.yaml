@@ -11,15 +11,15 @@ dataset:
   label_columns: "*"
   is_benchmark: true
   train:
-    name: chemberta3/chemberta3_benchmarking/data/datasets/deepchem_splits/clintox/train_cleaned.csv
+    name: chemberta3/chemberta3_benchmarking/data/datasets/deepchem_splits/covid19/train_cleaned.csv
     split: train
     deduplicate: false
   eval:
-    name: chemberta3/chemberta3_benchmarking/data/datasets/deepchem_splits/clintox/valid_cleaned.csv
+    name: chemberta3/chemberta3_benchmarking/data/datasets/deepchem_splits/covid19/valid_cleaned.csv
     split: validation
     deduplicate: false
 
 modchembert:
   task: classification
-  n_tasks: 2
+  n_tasks: 1
   pretrained_model: training_output/release/ModChemBERT-MLM-DAPT-TAFT-OPT

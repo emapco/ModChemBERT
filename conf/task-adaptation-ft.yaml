@@ -42,3 +42,4 @@ training_args:
   torch_compile: True
   torch_compile_backend: inductor
   gradient_checkpointing: True
+  max_grad_norm: null
