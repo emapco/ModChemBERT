@@ -33,7 +33,7 @@ dataset_transformations = {
 
 
 class ModChemBertDatasetProcessor:
-    """Dataset processing class for loading, preprocessing and tokenizing molecular property / language modeling datasets.
+    """Dataset processing class for loading, preprocessing and tokenizing molecular property/language modeling datasets.
 
     This processor wraps common data-access patterns for ModChemBERT style experiments:
     1. Load a Hugging Face Hub dataset split OR a local CSV/JSON(L) file.
@@ -132,7 +132,7 @@ class ModChemBertDatasetProcessor:
 
         self.tokenizer = tokenizer
         self.smiles_column = smiles_column
-        self.label_columns = label_columns
+        self.label_columns = filtered_label_columns
         self.task = task
         self.n_tasks = n_tasks
         self.dataset = ds.map(self._tokenize, batched=True, batch_size=2048, remove_columns=[self.smiles_column])
@@ -158,6 +158,7 @@ class ModChemBertDatasetProcessor:
                 ext_map = {"jsonl": "json"}
                 loader_name = ext_map.get(ext, ext)
                 try:
+                    print(f"Loading local dataset '{dataset_name}' with inferred loader '{loader_name}'...")
                     ds = datasets.load_dataset(loader_name, data_files=local_path.as_posix(), split=split)
                 except Exception as e:
                     raise RuntimeError(
@@ -165,6 +166,7 @@ class ModChemBertDatasetProcessor:
                     ) from e
             else:
                 # Remote or hub dataset identifier
+                print(f"Loading dataset '{dataset_name}' from the Hugging Face Hub...")
                 ds = datasets.load_dataset(dataset_name, split=split)
             assert isinstance(ds, datasets.arrow_dataset.Dataset)
             return ds
@@ -194,6 +196,8 @@ class ModChemBertDatasetProcessor:
         if not deduplicate:
             return ds
 
+        print(f"Deduplicating dataset of size {len(ds)} by keeping first occurrence of each unique SMILES.")
+
         seen = set()
 
         def keep_first_occurrence(example):
@@ -209,6 +213,7 @@ class ModChemBertDatasetProcessor:
         if sample_size is None:
             return ds
 
+        print(f"Sampling {sample_size} entries from dataset of size {len(ds)}.")
         # Shuffle for variability, then take the first N
         ds = ds.shuffle(seed=seed)
         n = min(sample_size, len(ds))
@@ -246,6 +251,7 @@ class ModChemBertDatasetProcessor:
                 break
 
         transform_fn = dataset_transformations.get(dataset_key, normalization)
+        print(f"Applying transformation '{transform_fn.__name__}' for dataset '{dataset_name}'.")
         return transform_fn(ds)
 
     def _tokenize(self, batch):

@@ -43,7 +43,7 @@
       "id": 4,
       "content": "[MASK]",
       "single_word": false,
-      "lstrip": false,
+      "lstrip": true,
       "rstrip": false,
       "normalized": false,
       "special": true

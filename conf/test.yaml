@@ -1,6 +1,6 @@
 defaults:
   - modchembert-config-mlm
-  - hyperopt
+  - hyperopt-mlm
   - _self_
 
 early_stopping_patience: null # Number of epochs to wait before early stopping
