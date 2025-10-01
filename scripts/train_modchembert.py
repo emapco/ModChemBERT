@@ -81,6 +81,7 @@ class ModChemBertTrainer:
             is_benchmark=self.cfg.dataset.get("is_benchmark", False),
             apply_transforms=self.cfg.dataset.get("apply_transforms", False),
             seed=seed,
+            num_proc=self.cfg.dataset.get("num_proc", None),
         )
         self.eval_data_processor = ModChemBertDatasetProcessor(
             dataset_name=self.cfg.dataset.eval.name,
@@ -96,6 +97,7 @@ class ModChemBertTrainer:
             is_benchmark=self.cfg.dataset.get("is_benchmark", False),
             apply_transforms=self.cfg.dataset.get("apply_transforms", False),
             seed=seed,
+            num_proc=self.cfg.dataset.get("num_proc", None),
         )
 
         train_size = len(self.train_data_processor)

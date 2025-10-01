@@ -82,6 +82,8 @@ class ModChemBertDatasetProcessor:
         against known dataset keys. Falls back to normalization if a match is found; leaves untouched otherwise.
     seed : int | None, default=None
         Random seed used for dataset shuffling before sampling. Ignored if `sample_size` is None.
+    num_proc : int, optional, defaults to None
+        Max number of processes when generating cache. Already cached shards are loaded sequentially.
     """
 
     def __init__(
@@ -99,6 +101,7 @@ class ModChemBertDatasetProcessor:
         is_benchmark: bool = False,
         apply_transforms: bool = False,
         seed: int | None = None,
+        num_proc: int | None = None,
     ) -> None:
         if task not in VALID_TASK_TYPES:
             raise ValueError(f"task must be one of {VALID_TASK_TYPES}, but got {task}")
@@ -135,7 +138,9 @@ class ModChemBertDatasetProcessor:
         self.label_columns = filtered_label_columns
         self.task = task
         self.n_tasks = n_tasks
-        self.dataset = ds.map(self._tokenize, batched=True, batch_size=2048, remove_columns=[self.smiles_column])
+        self.dataset = ds.map(
+            self._tokenize, batched=True, batch_size=2048, num_proc=num_proc, remove_columns=[self.smiles_column]
+        )
 
     def __len__(self) -> int:
         return len(self.dataset)

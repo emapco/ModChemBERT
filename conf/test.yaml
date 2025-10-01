@@ -19,6 +19,7 @@ use_normalized_weight_decay:
 dataset:
   smiles_column: canonical_smiles # Column name for SMILES strings in the dataset
   label_columns: null # Column name for labels in the dataset
+  num_proc: 8 # Number of processes to use for dataset tokenization
   train:
     name: Derify/augmented_canonical_druglike_QED_Pfizer_15M # Dataset name on Hugging Face Hub or local path
     split: train
