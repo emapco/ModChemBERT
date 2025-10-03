@@ -10,7 +10,7 @@ authors = [
 maintainers = [
     { name = "Emmanuel Cortes", email = "manny@derifyai.com" },
 ]
-requires-python = "==3.11"
+requires-python = "~=3.11"
 keywords = ["cheminformatics", "machine-learning", "transformers", "molecular-representation-learning", "molecular-property-prediction"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
